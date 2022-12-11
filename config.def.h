@@ -1,8 +1,11 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/XF86keysym.h>
+#define wal "/home/vinicius/.cache/wal/colors-wal-dwm.h"
+
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const Gap default_gap        = {.isgap = 1, .realgap = 10, .gappx = 10};
+static const Gap default_gap        = {.isgap = 1, .realgap = 10, .gappx = 5};
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
@@ -13,6 +16,10 @@ static const int showbar            = 1;     /* 0 means no bar */
 static const int topbar             = 1;     /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
+
+#if __has_include(wal)
+#include wal
+#else
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -25,6 +32,7 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 	[SchemeUrg]  = { col_gray4, col_cyan,  col_urgborder  },
 };
+#endif
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -37,6 +45,8 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Steam",    NULL,       "Lista de amigos", 0,     1,           -1 }, /* steam's friend list is a floating window */
+	{ "mpv",      NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -53,7 +63,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -65,8 +75,25 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+#if __has_include(wal)
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, NULL };
+#else
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+#endif
+static const char *termcmd[]  = { "alacritty", NULL };
+/* print commands */
+static const char *printscr[] = { "flameshot", "full", "-p", "/home/vinicius/Imagens", NULL };
+static const char *printgui[] = { "flameshot", "gui", NULL };
+/* volume commands */
+static const char *volumemute[] = { "pamixer", "-t", NULL };
+static const char *volumedown[] = { "pamixer", "-d", "5", NULL };
+static const char *volumeup[] = { "pamixer", "-i", "5", NULL };
+/* player commands */
+static const char *playerprev[] = { "playerctl", "previous" , NULL };
+static const char *playertoggle[] = { "playerctl", "play-pause", NULL };
+static const char *playernext[] = { "playerctl", "next" , NULL };
+/* https://github.com/amarakon/dfm */
+static const char *opendfm[] = { "dfm", "--open", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -97,6 +124,19 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_equal,  setgaps,        {.i = +5 } },
 	{ MODKEY|ShiftMask,             XK_minus,  setgaps,        {.i = GAP_RESET } },
 	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = GAP_TOGGLE} },
+	/* print keybindings */
+	{ 0,                            XK_Print,  spawn,          {.v = printscr } },
+	{ MODKEY|ShiftMask,             XK_Print,  spawn,          {.v = printgui } },
+	/* volume keybindings */
+	{ 0,                            XF86XK_AudioMute,        spawn, {.v = volumemute } },
+	{ 0,                            XF86XK_AudioLowerVolume, spawn, {.v = volumedown } },
+	{ 0,                            XF86XK_AudioRaiseVolume, spawn, {.v = volumeup } },
+	/* player keybindings */
+	{ 0,                            XF86XK_AudioPrev, spawn,   {.v = playerprev } },
+	{ 0,                            XF86XK_AudioPlay, spawn,   {.v = playertoggle } },
+	{ 0,                            XF86XK_AudioNext, spawn,   {.v = playernext } },
+    /* dfm */
+    { MODKEY,                       XK_o,      spawn,          {.v = opendfm } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -106,7 +146,7 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	/* { MODKEY|ShiftMask,             XK_q,      quit,           {0} }, */
 };
 
 /* button definitions */
