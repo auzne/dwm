@@ -45,7 +45,9 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "Steam",    NULL,       "Lista de amigos", 0,     1,           -1 }, /* steam's friend list is a floating window */
+	{ "Steam",    NULL,       NULL,       0,            1,           -1 }, /* Friends List, Chats... */
+    { "Steam",    NULL,       "Steam",    0,            0,           -1 }, /* Main Steam Window */
+    { "origin.exe", NULL,     NULL,       0,            1,           -1 },
 	{ "mpv",      NULL,       NULL,       0,            1,           -1 },
 };
 
@@ -82,12 +84,13 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 #endif
 static const char *termcmd[]  = { "alacritty", NULL };
 /* print commands */
-static const char *printscr[] = { "flameshot", "full", "-p", "/home/vinicius/Imagens", NULL };
+static const char *printscr[] = { "flameshot", "full", "-p", "/home/vinicius/Imagens/Capturas", NULL };
 static const char *printgui[] = { "flameshot", "gui", NULL };
 /* volume commands */
 static const char *volumemute[] = { "pamixer", "-t", NULL };
 static const char *volumedown[] = { "pamixer", "-d", "5", NULL };
 static const char *volumeup[] = { "pamixer", "-i", "5", NULL };
+static const char *mutemic[] = { "pactl", "set-source-mute", "2", "toggle", NULL };
 /* player commands */
 static const char *playerprev[] = { "playerctl", "previous" , NULL };
 static const char *playertoggle[] = { "playerctl", "play-pause", NULL };
@@ -131,6 +134,7 @@ static const Key keys[] = {
 	{ 0,                            XF86XK_AudioMute,        spawn, {.v = volumemute } },
 	{ 0,                            XF86XK_AudioLowerVolume, spawn, {.v = volumedown } },
 	{ 0,                            XF86XK_AudioRaiseVolume, spawn, {.v = volumeup } },
+    { MODKEY|ShiftMask,             XK_m,      spawn,          {.v = mutemic } },
 	/* player keybindings */
 	{ 0,                            XF86XK_AudioPrev, spawn,   {.v = playerprev } },
 	{ 0,                            XF86XK_AudioPlay, spawn,   {.v = playertoggle } },
