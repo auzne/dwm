@@ -43,12 +43,10 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "Steam",    NULL,       NULL,       0,            1,           -1 }, /* Friends List, Chats... */
-    { "Steam",    NULL,       "Steam",    0,            0,           -1 }, /* Main Steam Window */
-    { "origin.exe", NULL,     NULL,       0,            1,           -1 },
+	{ "steam",    NULL,       NULL,       0,            1,           -1 }, /* Friends List */
+	{ "steam",    NULL,       "Steam",    0,            0,           -1 }, /* Main Steam Window */
 	{ "mpv",      NULL,       NULL,       0,            1,           -1 },
+	{ "Eog",      "eog",      NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -94,9 +92,10 @@ static const char *mutemic[] = { "pactl", "set-source-mute", "2", "toggle", NULL
 /* player commands */
 static const char *playerprev[] = { "playerctl", "previous" , NULL };
 static const char *playertoggle[] = { "playerctl", "play-pause", NULL };
-static const char *playernext[] = { "playerctl", "next" , NULL };
+static const char *playernext[] = { "playerctl", "next", NULL };
 /* https://github.com/amarakon/dfm */
 static const char *opendfm[] = { "dfm", "--open", NULL };
+static const char *opennemo[] = { "nemo", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -139,8 +138,9 @@ static const Key keys[] = {
 	{ 0,                            XF86XK_AudioPrev, spawn,   {.v = playerprev } },
 	{ 0,                            XF86XK_AudioPlay, spawn,   {.v = playertoggle } },
 	{ 0,                            XF86XK_AudioNext, spawn,   {.v = playernext } },
-    /* dfm */
-    { MODKEY,                       XK_o,      spawn,          {.v = opendfm } },
+	/* dfm */
+	{ MODKEY,                       XK_o,      spawn,          {.v = opendfm } },
+	{ MODKEY,                       XK_e,      spawn,          {.v = opennemo } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -169,4 +169,3 @@ static const Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
